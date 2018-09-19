@@ -1,21 +1,17 @@
 'use strict';
 
-
-class Vector{
+// ------------  Vector  ------------
+class Vector {
     constructor (x = 0, y = 0){
         this.x = x;
         this.y = y;
     }
 
     plus (vector){
-        try{
-            if (vector instanceof Vector){
-                return new Vector(this.x + vector.x, this.y + vector.y);
-            } else {
-                throw 'Можно прибавлять к вектору только вектор типа Vector';
-            }
-        } catch (error) {
-            console.error(error);
+        if (vector instanceof Vector){
+            return new Vector(this.x + vector.x, this.y + vector.y);
+        } else {
+            throw new Error('Можно прибавлять к вектору только вектор типа Vector');
         }
     }
 
@@ -24,98 +20,136 @@ class Vector{
     }
 }
 
-
-class Actor{
+// ------------  Vector  ------------
+class Actor {
     constructor(pos = new Vector(0, 0), size = new Vector(1, 1), speed = new Vector(0, 0)) {
-        try{
-            if (pos instanceof Vector && size instanceof Vector && speed instanceof Vector){
-                this.pos = pos;
-                this.size = size;
-                this.speed = speed;
+        if (pos instanceof Vector && size instanceof Vector && speed instanceof Vector){
+            this.pos = pos;
+            this.size = size;
+            this.speed = speed;
 
-                Object.defineProperty(this, 'act', {
-                    writable: true,
-                    value: function(){}
-                });
+            Object.defineProperty(this, 'act', {
+                writable: true,
+                value: function(){}
+            });
 
-                Object.defineProperty(this, 'left', {
-                    get: function() {
-                        return this.pos.x;
-                    }
-                });
+            Object.defineProperty(this, 'left', {
+                get: function() {
+                    return this.pos.x;
+                }
+            });
 
-                Object.defineProperty(this, 'right', {
-                    get: function() {
-                        return this.pos.x + this.size.x;
-                    }
-                });
+            Object.defineProperty(this, 'right', {
+                get: function() {
+                    return this.pos.x + this.size.x;
+                }
+            });
 
-                Object.defineProperty(this, 'top', {
-                    get: function() {
-                        return this.pos.y;
-                    }
-                });
+            Object.defineProperty(this, 'top', {
+                get: function() {
+                    return this.pos.y;
+                }
+            });
 
-                Object.defineProperty(this, 'bottom', {
-                    get: function() {
-                        return this.pos.y + this.size.y;
-                    }
-                });
+            Object.defineProperty(this, 'bottom', {
+                get: function() {
+                    return this.pos.y + this.size.y;
+                }
+            });
 
-                Object.defineProperty(this, 'type', {
-                    writable: false,
-                    value: 'actor'
-                });
-
-            } else {
-                throw 'Аргументы для создания объекта Actor должны быть типа Vector';
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    isIntersect(another){
-        try{
-            if (another instanceof Actor){
-                return this !== another ?((this.right > another.left) && (this.left < another.right) &&
-                    (this.bottom > another.top) && (this.top < another.bottom)) : false;
-            } else {
-                throw 'Аргумент функции isIntersect должн быть только типа Actor';
-            }
-        } catch (error) {
-            console.error(error);
+            Object.defineProperty(this, 'type', {
+                writable: false,
+                value: 'actor'
+            });
+        } else {
+            throw new Error('Аргументы для создания объекта Actor должны быть типа Vector');
         }
 
     }
-}
 
-
-const items = new Map();
-const player = new Actor();
-items.set('Игрок', player);
-items.set('Первая монета', new Actor(new Vector(10, 10)));
-items.set('Вторая монета', new Actor(new Vector(15, 5)));
-
-function position(item) {
-    return ['left', 'top', 'right', 'bottom']
-        .map(side => `${side}: ${item[side]}`)
-        .join(', ');
-}
-
-function movePlayer(x, y) {
-    player.pos = player.pos.plus(new Vector(x, y));
-}
-
-function status(item, title) {
-    console.log(`${title}: ${position(item)}`);
-    if (player.isIntersect(item)) {
-        console.log(`Игрок подобрал ${title}`);
+    isIntersect(checkActor){
+        if (checkActor instanceof Actor){
+            return this !== checkActor ?((this.right > checkActor.left) && (this.left < checkActor.right) &&
+                (this.bottom > checkActor.top) && (this.top < checkActor.bottom)) : false;
+        } else {
+            throw new Error('Аргумент функции isIntersect должн быть типа Actor');
+        }
     }
 }
 
-items.forEach(status);
-movePlayer(10, 10);
-items.forEach(status);
-movePlayer(5, -5);
-items.forEach(status);
+// ------------  Level  ------------
+class Level {
+    constructor(grid, actors){
+        this.grid = grid;
+        this.actors = actors;
+
+        this.player = this.grid !== undefined && this.actors !== undefined ? this.actors.find(
+            actor => actor.type === 'player'
+        ) : undefined;
+        this.height = this.grid !== undefined ? this.grid.length : 0;
+        this.width = this.grid !== undefined ? Math.max.apply(null, this.grid.map(
+            function(gridRow){
+                return gridRow.length
+            })) : 0;
+        this.status = null;
+        this.finishDelay = 1;
+    }
+
+    isFinished() {
+        return this.status !== null && this.finishDelay < 0;
+    }
+
+    actorAt(checkActor) {
+        if (checkActor instanceof Actor){
+            this.actors.forEach(actor => {
+                if (checkActor.isIntersect(actor) && checkActor !== actor) {
+                    return actor;
+                }
+            });
+            return undefined;
+        } else {
+            throw new Error('Аргумент функции actorAt должн быть типа Actor');
+        }
+    }
+
+    obstacleAt(destination, size){
+
+    }
+}
+
+const a = new Level();
+console.log(a);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
