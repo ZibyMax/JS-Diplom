@@ -79,7 +79,7 @@ class Actor{
         try{
             if (another instanceof Actor){
                 return this !== another ?((this.right > another.left) && (this.left < another.right) &&
-                    (this.top > another.bottom) && (this.bottom < another.top)) : false;
+                    (this.bottom > another.top) && (this.top < another.bottom)) : false;
             } else {
                 throw 'Аргумент функции isIntersect должн быть только типа Actor';
             }
@@ -117,9 +117,5 @@ function status(item, title) {
 items.forEach(status);
 movePlayer(10, 10);
 items.forEach(status);
-//movePlayer(5, -5);
-//items.forEach(status);
-
-items.forEach((value, key) => {console.log(key);console.log(value);console.log(player.isIntersect(value))});
-
-//12345
+movePlayer(5, -5);
+items.forEach(status);
