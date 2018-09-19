@@ -121,3 +121,5 @@ items.forEach(status);
 //items.forEach(status);
 
 items.forEach((value, key) => {console.log(key);console.log(value);console.log(player.isIntersect(value))});
+
+//12345
