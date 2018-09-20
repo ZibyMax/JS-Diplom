@@ -147,10 +147,12 @@ class Level {
 // ---------------------------------------------------------------------
 
 const grid = [
-    [undefined, undefined],
-    ['wall', 'wall']
+    [undefined, undefined, undefined],
+    [undefined, undefined, undefined],
+    [undefined, undefined, undefined],
+    [undefined, 'wall', undefined],
+    [undefined, undefined, undefined]
 ];
-
 
 function MyCoin(title) {
     this.type = 'coin';
@@ -174,7 +176,7 @@ if (level.noMoreActors('coin')) {
     console.log(`Статус игры: ${level.status}`);
 }
 
-const obstacle = level.obstacleAt(new Vector(1, 1), player.size);
+const obstacle = level.obstacleAt(new Vector(3, 1), player.size);
 if (obstacle) {
     console.log(`На пути препятствие: ${obstacle}`);
 }
@@ -185,5 +187,5 @@ if (otherActor === fireball) {
 }
 
 const position = new Vector(0, 0);
-const size = new Vector(0, 0);
+const size = new Vector(1, 1);
 console.log(level.obstacleAt(position, size));
