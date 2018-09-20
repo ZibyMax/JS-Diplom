@@ -7,11 +7,10 @@ class Vector {
     }
 
     plus (vector){
-        if (vector instanceof Vector){
-            return new Vector(this.x + vector.x, this.y + vector.y);
-        } else {
+        if (!(vector instanceof Vector)){
             throw new Error('Можно прибавлять к вектору только вектор типа Vector');
         }
+        return new Vector(this.x + vector.x, this.y + vector.y);
     }
 
     times (multiplier){
@@ -21,18 +20,12 @@ class Vector {
 
 class Actor {
     constructor(pos = new Vector(0, 0), size = new Vector(1, 1), speed = new Vector(0, 0)) {
-        if (pos instanceof Vector && size instanceof Vector && speed instanceof Vector){
-            this.pos = pos;
-            this.size = size;
-            this.speed = speed;
-
-            Object.defineProperty(this, 'act', {
-                writable: true,
-                value: function(){}
-            });
-        } else {
+        if (!(pos instanceof Vector) || !(size instanceof Vector) || !(speed instanceof Vector)) {
             throw new Error('Аргументы для создания объекта Actor должны быть типа Vector');
         }
+        this.pos = pos;
+        this.size = size;
+        this.speed = speed;
     }
 
     get left() {
@@ -54,13 +47,18 @@ class Actor {
     get type() {
         return 'actor';
     }
+
+    act(){}
+
     isIntersect(checkActor){
-        if (checkActor instanceof Actor){
-            return this !== checkActor ?((this.right > checkActor.left) && (this.left < checkActor.right) &&
-                (this.bottom > checkActor.top) && (this.top < checkActor.bottom)) : false;
-        } else {
+        if (!(checkActor instanceof Actor)) {
             throw new Error('Аргумент функции isIntersect должны быть типа Actor');
         }
+        if (this === checkActor) {
+            return false;
+        }
+        return ((this.right > checkActor.left) && (this.left < checkActor.right) &&
+            (this.bottom > checkActor.top) && (this.top < checkActor.bottom));
     }
 }
 
@@ -68,12 +66,9 @@ class Level {
     constructor(grid = [], actors = []){
         this.grid = grid;
         this.actors = actors;
-
         this.player = this.actors.find(actor => { return actor.type === 'player' });
-
         this.height = this.grid.length;
-        this.width = this.height !== 0 ? Math.max.apply(null, this.grid.map(
-            function(gridRow){ return gridRow.length })) : 0;
+        this.width = this.height !== 0 ? Math.max(...this.grid.map(row => { return row.length })) : 0;
         this.status = null;
         this.finishDelay = 1;
     }
@@ -85,60 +80,48 @@ class Level {
     actorAt(checkActor) {
         if (!(checkActor instanceof Actor)){
             throw new Error('Аргумент функции actorAt должны быть типа Actor');
-        } else {
-            for (let actor of this.actors){
-                if (checkActor.isIntersect(actor) && checkActor !== actor) {
-                    return actor;
-                }
-            }
-            return undefined;
         }
+        const actor = this.actors.find(actor => { return checkActor.isIntersect(actor) && actor !== checkActor });
+        return actor ? actor : undefined;
     }
 
     obstacleAt(destination, size){
         if (!(destination instanceof Vector) || !(size instanceof Vector)){
             throw new Error('Аргументы функции obstacleAt должны быть типа Actor');
-        } else {
-
-            let leftBorder = Math.floor(destination.x);
-            let rightBorder = Math.ceil(destination.x + size.x);
-            let topBorder = Math.floor(destination.y);
-            let bottomBorder = Math.ceil(destination.y + size.y);
-
-            if (bottomBorder > this.height) { return 'lava'; }
-
-            if (leftBorder < 0 || rightBorder > this.width || topBorder < 0 ) {
+        }
+        const leftBorder = Math.floor(destination.x);
+        const rightBorder = Math.ceil(destination.x + size.x);
+        const topBorder = Math.floor(destination.y);
+        const bottomBorder = Math.ceil(destination.y + size.y);
+        if (bottomBorder > this.height) {
+            return 'lava';
+        }
+        if (leftBorder < 0 || rightBorder > this.width || topBorder < 0 ) {
                 return 'wall';
             }
-
-            for (let y = topBorder; y < bottomBorder; y++){
-                for (let x = leftBorder; x < rightBorder; x++){
-                    if (this.grid[y][x] !== undefined) {
-                        return this.grid[y][x];
-                    }
+        for (let y = topBorder; y < bottomBorder; y++){
+            for (let x = leftBorder; x < rightBorder; x++){
+                if (this.grid[y][x] !== undefined) {
+                    return this.grid[y][x];
                 }
             }
-            return undefined;
         }
+        return undefined;
     }
 
     removeActor(deletedActor){
-            let index = this.actors.indexOf(deletedActor);
-            if (index !== -1) {
-                this.actors.splice(index, 1);
-            }
+        const index = this.actors.indexOf(deletedActor);
+        if (index !== -1) {
+            this.actors.splice(index, 1);
+        }
     }
 
     noMoreActors(type){
-        for (let actor of this.actors){
-            if (actor.type === type){
-                return false;
-            }
-        }
-        return true;
+        const isNoMoreActors = this.actors.find(actor => { return actor.type === type});
+        return !isNoMoreActors;
     }
 
-    playerTouched(objectName, objectActor = undefined) {
+    playerTouched(objectName, objectActor) {
         if (this.status === null) {
             if((objectName === 'lava') || (objectName === 'fireball')) {
                 this.status = 'lost';
