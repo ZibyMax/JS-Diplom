@@ -33,7 +33,6 @@ class Actor {
         } else {
             throw new Error('Аргументы для создания объекта Actor должны быть типа Vector');
         }
-
     }
 
     get left() {
@@ -60,7 +59,7 @@ class Actor {
             return this !== checkActor ?((this.right > checkActor.left) && (this.left < checkActor.right) &&
                 (this.bottom > checkActor.top) && (this.top < checkActor.bottom)) : false;
         } else {
-            throw new Error('Аргумент функции isIntersect должн быть типа Actor');
+            throw new Error('Аргумент функции isIntersect должны быть типа Actor');
         }
     }
 }
@@ -85,7 +84,7 @@ class Level {
 
     actorAt(checkActor) {
         if (!(checkActor instanceof Actor)){
-            throw new Error('Аргумент функции actorAt должн быть типа Actor');
+            throw new Error('Аргумент функции actorAt должны быть типа Actor');
         } else {
             for (let actor of this.actors){
                 if (checkActor.isIntersect(actor) && checkActor !== actor) {
@@ -98,7 +97,7 @@ class Level {
 
     obstacleAt(destination, size){
         if (!(destination instanceof Vector) || !(size instanceof Vector)){
-            throw new Error('Аргумент функции actorAt должн быть типа Actor');
+            throw new Error('Аргументы функции obstacleAt должны быть типа Actor');
         } else {
             // ------------------------------------------------------------
         }
@@ -121,8 +120,8 @@ class Level {
     }
 
     playerTouched(objectName, objectActor = undefined) {
-        if (this.status !== null) {
-            if(objectName === 'lava' || objectName === 'fireball') {
+        if (this.status === null) {
+            if((objectName === 'lava') || (objectName === 'fireball')) {
                 this.status = 'lost';
             } else if (objectName === 'coin' && objectActor instanceof Actor) {
                 this.removeActor(objectActor);
@@ -132,13 +131,9 @@ class Level {
             }
         }
     }
-
 }
 
 // ---------------------------------------------------------------------
-
-
-
 
 
 
