@@ -79,18 +79,15 @@ class Actor {
 
 // ------------  Level  ------------
 class Level {
-    constructor(grid, actors){
+    constructor(grid = [], actors = []){
         this.grid = grid;
         this.actors = actors;
 
-        this.player = this.grid !== undefined && this.actors !== undefined ? this.actors.find(
-            actor => actor.type === 'player'
-        ) : undefined;
-        this.height = this.grid !== undefined ? this.grid.length : 0;
-        this.width = this.grid !== undefined ? Math.max.apply(null, this.grid.map(
-            function(gridRow){
-                return gridRow.length
-            })) : 0;
+        this.player = this.actors.find(actor => { actor.type === 'player' });
+
+        this.height = this.grid.length;
+        this.width = this.height !== 0 ? Math.max.apply(null, this.grid.map(
+            function(gridRow){ return gridRow.length })) : 0;
         this.status = null;
         this.finishDelay = 1;
     }
@@ -100,32 +97,43 @@ class Level {
     }
 
     actorAt(checkActor) {
-        if (checkActor instanceof Actor){
-            this.actors.forEach(actor => {
+        if (!(checkActor instanceof Actor)){
+            throw new Error('Аргумент функции actorAt должн быть типа Actor');
+        } else {
+            for (let actor of this.actors){
                 if (checkActor.isIntersect(actor) && checkActor !== actor) {
                     return actor;
                 }
-            });
+            }
             return undefined;
-        } else {
-            throw new Error('Аргумент функции actorAt должн быть типа Actor');
         }
     }
 
     obstacleAt(destination, size){
-
+        if (!(destination instanceof Vector) || !(size instanceof Vector)){
+            throw new Error('Аргумент функции actorAt должн быть типа Actor');
+        } else {
+            // ------------------------------------------------------------
+        }
     }
+
+    removeActor(deletedActor){
+            let index = this.actors.indexOf(deletedActor);
+            if (index !== -1) {
+                this.actors.splice(index, 1);
+            }
+    }
+
+    noMoreActors(type){
+        for (let actor of this.actors){
+            if (actor.type === type){
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
-
-const a = new Level();
-console.log(a);
-
-
-
-
-
-
-
 
 
 
