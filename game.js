@@ -99,18 +99,26 @@ class Level {
         if (!(destination instanceof Vector) || !(size instanceof Vector)){
             throw new Error('Аргументы функции obstacleAt должны быть типа Actor');
         } else {
+
             let leftBorder = Math.floor(destination.x);
             let rightBorder = Math.ceil(destination.x + size.x);
             let topBorder = Math.floor(destination.y);
             let bottomBorder = Math.ceil(destination.y + size.y);
 
-            if (bottomBorder >= this.height) {
-                return 'lava';
-            } else if (leftBorder < 0 || rightBorder > this.width || topBorder < 0 ) {
+            if (bottomBorder > this.height) { return 'lava'; }
+
+            if (leftBorder < 0 || rightBorder > this.width || topBorder < 0 ) {
                 return 'wall';
-            } else {
-                return undefined;
             }
+
+            for (let y = topBorder; y < bottomBorder; y++){
+                for (let x = leftBorder; x < rightBorder; x++){
+                    if (this.grid[y][x] !== undefined) {
+                        return this.grid[y][x];
+                    }
+                }
+            }
+            return undefined;
         }
     }
 
@@ -147,10 +155,6 @@ class Level {
 // ---------------------------------------------------------------------
 
 const grid = [
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
-    [undefined, 'wall', undefined],
     [undefined, undefined, undefined]
 ];
 
@@ -176,7 +180,7 @@ if (level.noMoreActors('coin')) {
     console.log(`Статус игры: ${level.status}`);
 }
 
-const obstacle = level.obstacleAt(new Vector(3, 1), player.size);
+const obstacle = level.obstacleAt(new Vector(0, 4), player.size);
 if (obstacle) {
     console.log(`На пути препятствие: ${obstacle}`);
 }
@@ -186,6 +190,9 @@ if (otherActor === fireball) {
     console.log('Пользователь столкнулся с шаровой молнией');
 }
 
+/*
 const position = new Vector(0, 0);
-const size = new Vector(1, 1);
+const size = new Vector(0, 1);
+console.log(level.height);
 console.log(level.obstacleAt(position, size));
+*/
