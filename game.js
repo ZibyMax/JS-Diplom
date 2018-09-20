@@ -1,6 +1,5 @@
 'use strict';
 
-// ------------  Vector  ------------
 class Vector {
     constructor (x = 0, y = 0){
         this.x = x;
@@ -20,7 +19,6 @@ class Vector {
     }
 }
 
-// ------------  Vector  ------------
 class Actor {
     constructor(pos = new Vector(0, 0), size = new Vector(1, 1), speed = new Vector(0, 0)) {
         if (pos instanceof Vector && size instanceof Vector && speed instanceof Vector){
@@ -77,7 +75,6 @@ class Actor {
     }
 }
 
-// ------------  Level  ------------
 class Level {
     constructor(grid = [], actors = []){
         this.grid = grid;
