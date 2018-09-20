@@ -99,7 +99,18 @@ class Level {
         if (!(destination instanceof Vector) || !(size instanceof Vector)){
             throw new Error('Аргументы функции obstacleAt должны быть типа Actor');
         } else {
-            // ------------------------------------------------------------
+            let leftBorder = Math.floor(destination.x);
+            let rightBorder = Math.ceil(destination.x + size.x);
+            let topBorder = Math.floor(destination.y);
+            let bottomBorder = Math.ceil(destination.y + size.y);
+
+            if (bottomBorder >= this.height) {
+                return 'lava';
+            } else if (leftBorder < 0 || rightBorder > this.width || topBorder < 0 ) {
+                return 'wall';
+            } else {
+                return undefined;
+            }
         }
     }
 
@@ -123,7 +134,7 @@ class Level {
         if (this.status === null) {
             if((objectName === 'lava') || (objectName === 'fireball')) {
                 this.status = 'lost';
-            } else if (objectName === 'coin' && objectActor instanceof Actor) {
+            } else if (objectName === 'coin') {
                 this.removeActor(objectActor);
                 if (this.noMoreActors('coin')){
                     this.status = 'won';
@@ -135,5 +146,44 @@ class Level {
 
 // ---------------------------------------------------------------------
 
+const grid = [
+    [undefined, undefined],
+    ['wall', 'wall']
+];
 
 
+function MyCoin(title) {
+    this.type = 'coin';
+    this.title = title;
+}
+MyCoin.prototype = Object.create(Actor);
+MyCoin.constructor = MyCoin;
+
+const goldCoin = new MyCoin('Золото');
+const bronzeCoin = new MyCoin('Бронза');
+const player = new Actor();
+const fireball = new Actor();
+
+const level = new Level(grid, [ goldCoin, bronzeCoin, player, fireball ]);
+
+level.playerTouched('coin', goldCoin);
+level.playerTouched('coin', bronzeCoin);
+
+if (level.noMoreActors('coin')) {
+    console.log('Все монеты собраны');
+    console.log(`Статус игры: ${level.status}`);
+}
+
+const obstacle = level.obstacleAt(new Vector(1, 1), player.size);
+if (obstacle) {
+    console.log(`На пути препятствие: ${obstacle}`);
+}
+
+const otherActor = level.actorAt(player);
+if (otherActor === fireball) {
+    console.log('Пользователь столкнулся с шаровой молнией');
+}
+
+const position = new Vector(0, 0);
+const size = new Vector(0, 0);
+console.log(level.obstacleAt(position, size));
