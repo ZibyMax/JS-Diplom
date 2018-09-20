@@ -130,9 +130,66 @@ class Level {
         return true;
     }
 
+    playerTouched(objectName, objectActor = undefined) {
+        if (this.status !== null) {
+            if(objectName === 'lava' || objectName === 'fireball') {
+                this.status = 'lost';
+            } else if (objectName === 'coin' && objectActor instanceof Actor) {
+                this.removeActor(objectActor);
+                if (this.noMoreActors('coin')){
+                    this.status = 'won';
+                }
+            }
+        }
+    }
+
 }
 
+const grid = [
+[undefined, undefined],
+    ['wall', 'wall']
+];
 
+function MyCoin(title) {
+    this.type = 'coin';
+    this.title = title;
+}
+
+MyCoin.prototype = Object.create(Actor);
+MyCoin.constructor = MyCoin;
+
+const goldCoin = new MyCoin('Золото');
+const bronzeCoin = new MyCoin('Бронза');
+const player = new Actor();
+const fireball = new Actor();
+
+const level = new Level(grid, [ goldCoin, bronzeCoin, player, fireball ]);
+
+console.log(goldCoin);
+console.log(bronzeCoin);
+console.log(player);
+console.log(fireball);
+console.log(level);
+
+/*
+level.playerTouched('coin', goldCoin);
+level.playerTouched('coin', bronzeCoin);
+
+if (level.noMoreActors('coin')) {
+    console.log('Все монеты собраны');
+    console.log(`Статус игры: ${level.status}`);
+}
+
+const obstacle = level.obstacleAt(new Vector(1, 1), player.size);
+if (obstacle) {
+    console.log(`На пути препятствие: ${obstacle}`);
+}
+
+const otherActor = level.actorAt(player);
+if (otherActor === fireball) {
+    console.log('Пользователь столкнулся с шаровой молнией');
+}
+*/
 
 
 
