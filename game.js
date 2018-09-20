@@ -117,7 +117,7 @@ class Level {
     }
 
     noMoreActors(type){
-        return !(this.actors.find(actor => { return actor.type === type}));
+        return !(this.actors.find(actor => { return actor.type === type }));
     }
 
     playerTouched(objectName, objectActor) {
