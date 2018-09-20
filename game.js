@@ -80,7 +80,7 @@ class Level {
         this.grid = grid;
         this.actors = actors;
 
-        this.player = this.actors.find(actor => { actor.type === 'player' });
+        this.player = this.actors.find(actor => { return actor.type === 'player' });
 
         this.height = this.grid.length;
         this.width = this.height !== 0 ? Math.max.apply(null, this.grid.map(
