@@ -133,3 +133,90 @@ class Level {
             }
     }
 }
+
+class LevelParser{
+    constructor(map){
+        //this.map = new Map(map); - так то почему не работает?
+        this.map = Object.assign({}, map);
+    }
+
+    actorFromSymbol(simbol){
+        return this.map[simbol];
+    }
+
+    obstacleFromSymbol(simbol){
+        if (simbol === 'x') return 'wall';
+        if (simbol === '!') return 'lava';
+        return undefined; // -> можно ли убрать эту строку?
+    }
+
+    createGrid(lines){
+        const grid = [];
+        lines.forEach(line => {
+            grid.push(line.split('').map(item => {return this.obstacleFromSymbol(item)}));
+        });
+        return grid;
+    }
+
+    createActors(){
+
+    }
+}
+
+const plan = [
+    ' @ ',
+    'x!x'
+];
+
+const actorsDict = Object.create(null);
+actorsDict['@'] = Actor;
+
+const parser = new LevelParser(actorsDict);
+
+console.log(parser);
+
+
+//const level = parser.parse(plan);
+
+//level.grid.forEach((line, y) => {
+//    line.forEach((cell, x) => console.log(`(${x}:${y}) ${cell}`));
+//});
+
+//level.actors.forEach(actor => console.log(`(${actor.pos.x}:${actor.pos.y}) ${actor.type}`));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
