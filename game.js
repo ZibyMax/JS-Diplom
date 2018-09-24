@@ -192,9 +192,24 @@ class Fireball extends Actor{
         });
     }
 
-    getNextPosition (time = 1){
+    getNextPosition(time = 1){
         return new Vector(this.pos.x + this.speed.x * time, this.pos.y + this.speed.y * time);
     }
+
+    handleObstacle(){
+        this.speed.x *= -1;
+        this.speed.y *= -1;
+    }
+
+    act(time, level){
+        const nextPos = this.getNextPosition(time);
+        if (level.obstacleAt(nextPos, this.size)) {
+            this.handleObstacle();
+        } else {
+            this.pos = nextPos;
+        }
+    }
+
 }
 
 
