@@ -140,13 +140,13 @@ class LevelParser{
         this.map = Object.assign({}, map);
     }
 
-    actorFromSymbol(simbol){
-        return this.map[simbol];
+    actorFromSymbol(symbol){
+        return this.map[symbol];
     }
 
-    obstacleFromSymbol(simbol){
-        if (simbol === 'x') return 'wall';
-        if (simbol === '!') return 'lava';
+    obstacleFromSymbol(symbol){
+        if (symbol === 'x') return 'wall';
+        if (symbol === '!') return 'lava';
         return undefined; // -> можно ли убрать эту строку?
     }
 
@@ -158,31 +158,30 @@ class LevelParser{
         return grid;
     }
 
-    createActors(){
+    createActors(lines) {
+        const actors = [];
+        if (!lines) return actors;
+        lines.forEach((line, y) => {
+            let row = line.split('');
+            row.forEach((symbol, x) => {
+                const constructor = this.actorFromSymbol(symbol);
+                if (typeof constructor === 'function') {
+                    const actor = new constructor(new Vector(x, y));
+                    if (actor instanceof Actor) {
+                        actors.push(actor);
+                    }
+                }
+            });
+        });
+        return actors;
+    }
 
+    parse(lines) {
+        const grid = this.createGrid(lines);
+        const actors = this.createActors(lines);
+        return new Level(grid, actors);
     }
 }
-
-const plan = [
-    ' @ ',
-    'x!x'
-];
-
-const actorsDict = Object.create(null);
-actorsDict['@'] = Actor;
-
-const parser = new LevelParser(actorsDict);
-
-console.log(parser);
-
-
-//const level = parser.parse(plan);
-
-//level.grid.forEach((line, y) => {
-//    line.forEach((cell, x) => console.log(`(${x}:${y}) ${cell}`));
-//});
-
-//level.actors.forEach(actor => console.log(`(${actor.pos.x}:${actor.pos.y}) ${actor.type}`));
 
 
 
