@@ -267,9 +267,15 @@ class Coin extends Actor{
     }
 }
 
+class Player extends Actor{
+    constructor(pos = new Vector()){
+        super(new Vector(pos.x, pos.y - 0.5), new Vector(0.8, 1.5));
+        Object.defineProperty(this, 'type', {
+            value: 'player'
+        });
+    }
+}
 
-const coin = new Coin();
-console.log(coin);
 
 
 
