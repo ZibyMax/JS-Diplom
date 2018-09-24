@@ -276,24 +276,3 @@ class Player extends Actor{
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
