@@ -183,7 +183,19 @@ class LevelParser{
     }
 }
 
+class Fireball extends Actor{
+    constructor (pos = new Vector(), speed = new Vector()){
+        const size = new Vector(1, 1);
+        super(pos, size, speed);
+        Object.defineProperty(this, 'type', {
+            value: 'fireball'
+        });
+    }
 
+    getNextPosition (time = 1){
+        return new Vector(this.pos.x + this.speed.x * time, this.pos.y + this.speed.y * time);
+    }
+}
 
 
 
