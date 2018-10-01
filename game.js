@@ -57,6 +57,7 @@ class Actor {
         if (this === checkActor) {
             return false;
         }
+        // скобки можно опустить
         return ((this.right > checkActor.left) && (this.left < checkActor.right) &&
             (this.bottom > checkActor.top) && (this.top < checkActor.bottom));
     }
@@ -66,8 +67,10 @@ class Level {
     constructor(grid = [], actors = []){
         this.grid = grid;
         this.actors = actors;
+        // тут можно использовать сокращённую форму записи стрелочной функции
         this.player = this.actors.find(actor => { return actor.type === 'player' });
         this.height = this.grid.length;
+        // если добавить в список аргументов Math.max 0, то проверку можно будет убрать
         this.width = this.height !== 0 ? Math.max(...this.grid.map(row => { return row.length })) : 0;
         this.status = null;
         this.finishDelay = 1;
@@ -81,7 +84,9 @@ class Level {
         if (!(checkActor instanceof Actor)){
             throw new Error('Аргумент функции actorAt должны быть типа Actor');
         }
+        // вторая часть проверки дублирует логику isIntersect
         const actor = this.actors.find(actor => { return checkActor.isIntersect(actor) && actor !== checkActor });
+        // эта строчка не несёт никаокго смысла
         return actor ? actor : undefined;
     }
 
@@ -101,6 +106,8 @@ class Level {
             }
         for (let y = topBorder; y < bottomBorder; y++){
             for (let x = leftBorder; x < rightBorder; x++){
+                // this.grid[y][x] лучше записатьв переменную,
+                // чтобы не писать 2 раза
                 if (this.grid[y][x] !== undefined) {
                     return this.grid[y][x];
                 }
@@ -117,10 +124,12 @@ class Level {
     }
 
     noMoreActors(type){
+        // тут лучше использовать метод массива, который возаращет true/false
         return !(this.actors.find(actor => { return actor.type === type }));
     }
 
     playerTouched(objectName, objectActor) {
+        // не опускайте фигурные скобки
         if (this.status !== null) return;
         if ((objectName === 'lava') || (objectName === 'fireball')) {
             this.status = 'lost';
@@ -136,6 +145,8 @@ class Level {
 
 class LevelParser{
     constructor(map){
+        // потому что конструктор Map принимает массив из массивов
+        // с двумя элементами (ключ и значение)
         //this.map = new Map(map); - так то почему не работает?
         this.map = Object.assign({}, map);
     }
@@ -145,14 +156,20 @@ class LevelParser{
     }
 
     obstacleFromSymbol(symbol){
+        // не опускайте фигурные скобки
         if (symbol === 'x') return 'wall';
         if (symbol === '!') return 'lava';
+        // да, функция и так вернёт undefined, если не указано иное
         return undefined; // -> можно ли убрать эту строку?
     }
 
     createGrid(lines){
         const grid = [];
+        // можно записать короче, если использовать метод map 2 раза
         lines.forEach(line => {
+            // там где возможно лучше использовать
+            // сокращённую форму записи стрелочных функций
+            // (без фигурных скобок)
             grid.push(line.split('').map(item => {return this.obstacleFromSymbol(item)}));
         });
         return grid;
@@ -160,8 +177,12 @@ class LevelParser{
 
     createActors(lines) {
         const actors = [];
+        // если передадут некорректные данные, то работать ничего не будет,
+        // а из за этой строчки ошибку будет найти сложнее
         if (!lines) return actors;
         lines.forEach((line, y) => {
+            // если значение присваиваетя переменной 1 раз,
+            // то лучше использовать const
             let row = line.split('');
             row.forEach((symbol, x) => {
                 const constructor = this.actorFromSymbol(symbol);
@@ -184,19 +205,23 @@ class LevelParser{
 }
 
 class Fireball extends Actor{
+    // лучше не опускать аргументы конструктора Vector
     constructor (pos = new Vector(), speed = new Vector()){
         const size = new Vector(1, 1);
         super(pos, size, speed);
+        // зачем defineProperty?
         Object.defineProperty(this, 'type', {
             value: 'fireball'
         });
     }
 
     getNextPosition(time = 1){
+        // здесь лучше использовать методы класса Vector
         return new Vector(this.pos.x + this.speed.x * time, this.pos.y + this.speed.y * time);
     }
 
     handleObstacle(){
+        // метод класса Vector
         this.speed.x *= -1;
         this.speed.y *= -1;
     }
@@ -237,8 +262,10 @@ class FireRain extends Fireball{
 }
 
 class Coin extends Actor{
+    // аргументы Vector
     constructor(pos = new Vector()){
         super(new Vector(pos.x + 0.2, pos.y + 0.1), new Vector(0.6, 0.6));
+        // defineProperty?
         Object.defineProperty(this, 'type', {
             value: 'coin'
         });
@@ -268,8 +295,10 @@ class Coin extends Actor{
 }
 
 class Player extends Actor{
+    // аргументы Vector
     constructor(pos = new Vector()){
         super(new Vector(pos.x, pos.y - 0.5), new Vector(0.8, 1.5));
+        // defineProperty?
         Object.defineProperty(this, 'type', {
             value: 'player'
         });
