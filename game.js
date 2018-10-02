@@ -54,11 +54,12 @@ class Actor {
         if (!(checkActor instanceof Actor)) {
             throw new Error('Аргумент функции isIntersect должны быть типа Actor');
         }
+        // Игорь, ниже вы пишете что скобки лучше добавить, а не убрать (Level.playerTouched)
         if (this === checkActor) {
             return false;
         }
-        return ((this.right > checkActor.left) && (this.left < checkActor.right) &&
-            (this.bottom > checkActor.top) && (this.top < checkActor.bottom));
+        return (this.right > checkActor.left && this.left < checkActor.right &&
+            this.bottom > checkActor.top && this.top < checkActor.bottom);
     }
 }
 
@@ -66,8 +67,10 @@ class Level {
     constructor(grid = [], actors = []){
         this.grid = grid;
         this.actors = actors;
+        // тут можно использовать сокращённую форму записи стрелочной функции -----> ? так она и так сокращенная, куда больше
         this.player = this.actors.find(actor => { return actor.type === 'player' });
         this.height = this.grid.length;
+        // если добавить в список аргументов Math.max 0, то проверку можно будет убрать -----> а?
         this.width = this.height !== 0 ? Math.max(...this.grid.map(row => { return row.length })) : 0;
         this.status = null;
         this.finishDelay = 1;
@@ -81,8 +84,8 @@ class Level {
         if (!(checkActor instanceof Actor)){
             throw new Error('Аргумент функции actorAt должны быть типа Actor');
         }
-        const actor = this.actors.find(actor => { return checkActor.isIntersect(actor) && actor !== checkActor });
-        return actor ? actor : undefined;
+        const actor = this.actors.find(actor => { return checkActor.isIntersect(actor) });
+        return actor;
     }
 
     obstacleAt(destination, size){
@@ -101,12 +104,14 @@ class Level {
             }
         for (let y = topBorder; y < bottomBorder; y++){
             for (let x = leftBorder; x < rightBorder; x++){
-                if (this.grid[y][x] !== undefined) {
-                    return this.grid[y][x];
+                // this.grid[y][x] лучше записатьв переменную, чтобы не писать 2 раза
+                // -----> я не понял зачем это делать: чем this.grid[y][x] хуже?
+                let posInGrid = this.grid[y][x];
+                if (posInGrid !== undefined) {
+                    return posInGrid;
                 }
             }
         }
-        return undefined;
     }
 
     removeActor(deletedActor){
@@ -117,11 +122,15 @@ class Level {
     }
 
     noMoreActors(type){
-        return !(this.actors.find(actor => { return actor.type === type }));
+        return !(this.actors.some(actor => { return actor.type === type }));
+        //return !(this.actors.find(actor => { return actor.type === type }));
+        // -----> почему return нельзя убрать?
     }
 
     playerTouched(objectName, objectActor) {
-        if (this.status !== null) return;
+        if (this.status !== null) {
+            return;
+        }
         if ((objectName === 'lava') || (objectName === 'fireball')) {
             this.status = 'lost';
         }
@@ -136,7 +145,6 @@ class Level {
 
 class LevelParser{
     constructor(map){
-        //this.map = new Map(map); - так то почему не работает?
         this.map = Object.assign({}, map);
     }
 
@@ -145,9 +153,12 @@ class LevelParser{
     }
 
     obstacleFromSymbol(symbol){
-        if (symbol === 'x') return 'wall';
-        if (symbol === '!') return 'lava';
-        return undefined; // -> можно ли убрать эту строку?
+        if (symbol === 'x') {
+            return 'wall';
+        }
+        if (symbol === '!') {
+            return 'lava';
+        }
     }
 
     createGrid(lines){
