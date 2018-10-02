@@ -54,7 +54,6 @@ class Actor {
         if (!(checkActor instanceof Actor)) {
             throw new Error('Аргумент функции isIntersect должны быть типа Actor');
         }
-        // Игорь, ниже вы пишете что скобки лучше добавить, а не убрать (Level.playerTouched)
         if (this === checkActor) {
             return false;
         }
@@ -67,11 +66,10 @@ class Level {
     constructor(grid = [], actors = []){
         this.grid = grid;
         this.actors = actors;
-        // тут можно использовать сокращённую форму записи стрелочной функции -----> ? так она и так сокращенная, куда больше
-        this.player = this.actors.find(actor => { return actor.type === 'player' });
+        this.player = this.actors.find(actor => actor.type === 'player');
         this.height = this.grid.length;
-        // если добавить в список аргументов Math.max 0, то проверку можно будет убрать -----> а?
-        this.width = this.height !== 0 ? Math.max(...this.grid.map(row => { return row.length })) : 0;
+        // если добавить в список аргументов Math.max 0, то проверку можно будет убрать -----> а?-----------------------!!!!!!!!!!
+        this.width = this.height !== 0 ? Math.max(...this.grid.map(row => row.length)) : 0;
         this.status = null;
         this.finishDelay = 1;
     }
@@ -122,9 +120,7 @@ class Level {
     }
 
     noMoreActors(type){
-        return !(this.actors.some(actor => { return actor.type === type }));
-        //return !(this.actors.find(actor => { return actor.type === type }));
-        // -----> почему return нельзя убрать?
+        return !(this.actors.some(actor => actor.type === type));
     }
 
     playerTouched(objectName, objectActor) {
@@ -163,11 +159,9 @@ class LevelParser{
 
     createGrid(lines){
         const grid = [];
-        // можно записать короче, если использовать метод map 2 раза ----------------!!!!!!!!!!!!!!!!
-        // там где возможно лучше использовать сокращённую форму записи стрелочных функций
-        // (без фигурных скобок)
+        // можно записать короче, если использовать метод map 2 раза ---------------------------------------------------!!!!!!!!!!!!!!!!
         lines.forEach(line => {
-            grid.push(line.split('').map(item => {return this.obstacleFromSymbol(item)}));
+            grid.push(line.split('').map(item => this.obstacleFromSymbol(item)));
         });
         return grid;
     }
@@ -200,10 +194,10 @@ class Fireball extends Actor{
     constructor (pos = new Vector(0, 0), speed = new Vector(0, 0)){
         const size = new Vector(1, 1);
         super(pos, size, speed);
-        // зачем defineProperty? -------------------------!!!!!!!!!!!!!!!
-        Object.defineProperty(this, 'type', {
-            value: 'fireball'
-        });
+    }
+
+    get type() {
+        return 'fireball';
     }
 
     getNextPosition(time = 1){
@@ -252,14 +246,14 @@ class FireRain extends Fireball{
 class Coin extends Actor{
     constructor(pos = new Vector()){
         super(pos.plus(new Vector(0.2, 0.1)), new Vector(0.6, 0.6));
-        // defineProperty? --------------------------------------------------!!!!!!!!!!!!!!
-        Object.defineProperty(this, 'type', {
-            value: 'coin'
-        });
         this.springSpeed = 8;
         this.springDist = 0.07;
         this.spring = Math.random() * Math.PI * 2;
         this.startPos = this.pos;
+    }
+
+    get type() {
+        return 'coin';
     }
 
     updateSpring(time = 1){
@@ -273,8 +267,7 @@ class Coin extends Actor{
     getNextPosition(time = 1){
         this.updateSpring(time);
         const springVector = this.getSpringVector();
-        return new Vector(this.startPos.x, this.startPos.y + springVector.y);
-        //return new Vector(this.startPos.x, this.startPos.y + springVector.y);
+        return this.startPos.plus(springVector);
     }
 
     act(time = 1){
@@ -285,10 +278,10 @@ class Coin extends Actor{
 class Player extends Actor{
     constructor(pos = new Vector()){
         super(pos.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5));
-        // defineProperty? --------------------------------------------------!!!!!!!!!!!!!!
-        Object.defineProperty(this, 'type', {
-            value: 'player'
-        });
+    }
+
+    get type() {
+        return 'player';
     }
 }
 
