@@ -68,8 +68,7 @@ class Level {
         this.actors = actors;
         this.player = this.actors.find(actor => actor.type === 'player');
         this.height = this.grid.length;
-        // если добавить в список аргументов Math.max 0, то проверку можно будет убрать -----> а?-----------------------!!!!!!!!!!
-        this.width = this.height !== 0 ? Math.max(...this.grid.map(row => row.length)) : 0;
+        this.width = Math.max(0, ...this.grid.map(row => row.length));
         this.status = null;
         this.finishDelay = 1;
     }
@@ -103,10 +102,13 @@ class Level {
         for (let y = topBorder; y < bottomBorder; y++){
             for (let x = leftBorder; x < rightBorder; x++){
                 // this.grid[y][x] лучше записатьв переменную, чтобы не писать 2 раза
-                // -----> я не понял зачем это делать: чем this.grid[y][x] хуже?
-                let posInGrid = this.grid[y][x];
-                if (posInGrid !== undefined) {
-                    return posInGrid;
+
+                //я не понял зачем это делать: чем this.grid[y][x] хуже?
+                //скорость доступа к массиву такая-же как и к обычной переменной
+
+                const obstacle = this.grid[y][x];
+                if (obstacle) {
+                    return obstacle;
                 }
             }
         }
@@ -158,12 +160,7 @@ class LevelParser{
     }
 
     createGrid(lines){
-        const grid = [];
-        // можно записать короче, если использовать метод map 2 раза ---------------------------------------------------!!!!!!!!!!!!!!!!
-        lines.forEach(line => {
-            grid.push(line.split('').map(item => this.obstacleFromSymbol(item)));
-        });
-        return grid;
+        return lines.map(line => line.split('').map(item => this.obstacleFromSymbol(item)));
     }
 
     createActors(lines) {
