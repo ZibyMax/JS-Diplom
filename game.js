@@ -163,6 +163,9 @@ class LevelParser{
 
     createGrid(lines){
         const grid = [];
+        // можно записать короче, если использовать метод map 2 раза ----------------!!!!!!!!!!!!!!!!
+        // там где возможно лучше использовать сокращённую форму записи стрелочных функций
+        // (без фигурных скобок)
         lines.forEach(line => {
             grid.push(line.split('').map(item => {return this.obstacleFromSymbol(item)}));
         });
@@ -171,9 +174,8 @@ class LevelParser{
 
     createActors(lines) {
         const actors = [];
-        if (!lines) return actors;
         lines.forEach((line, y) => {
-            let row = line.split('');
+            const row = line.split('');
             row.forEach((symbol, x) => {
                 const constructor = this.actorFromSymbol(symbol);
                 if (typeof constructor === 'function') {
@@ -195,21 +197,21 @@ class LevelParser{
 }
 
 class Fireball extends Actor{
-    constructor (pos = new Vector(), speed = new Vector()){
+    constructor (pos = new Vector(0, 0), speed = new Vector(0, 0)){
         const size = new Vector(1, 1);
         super(pos, size, speed);
+        // зачем defineProperty? -------------------------!!!!!!!!!!!!!!!
         Object.defineProperty(this, 'type', {
             value: 'fireball'
         });
     }
 
     getNextPosition(time = 1){
-        return new Vector(this.pos.x + this.speed.x * time, this.pos.y + this.speed.y * time);
+        return this.pos.plus(this.speed.times(time));
     }
 
     handleObstacle(){
-        this.speed.x *= -1;
-        this.speed.y *= -1;
+        this.speed = this.speed.times(-1);
     }
 
     act(time, level){
@@ -249,7 +251,8 @@ class FireRain extends Fireball{
 
 class Coin extends Actor{
     constructor(pos = new Vector()){
-        super(new Vector(pos.x + 0.2, pos.y + 0.1), new Vector(0.6, 0.6));
+        super(pos.plus(new Vector(0.2, 0.1)), new Vector(0.6, 0.6));
+        // defineProperty? --------------------------------------------------!!!!!!!!!!!!!!
         Object.defineProperty(this, 'type', {
             value: 'coin'
         });
@@ -271,6 +274,7 @@ class Coin extends Actor{
         this.updateSpring(time);
         const springVector = this.getSpringVector();
         return new Vector(this.startPos.x, this.startPos.y + springVector.y);
+        //return new Vector(this.startPos.x, this.startPos.y + springVector.y);
     }
 
     act(time = 1){
@@ -280,7 +284,8 @@ class Coin extends Actor{
 
 class Player extends Actor{
     constructor(pos = new Vector()){
-        super(new Vector(pos.x, pos.y - 0.5), new Vector(0.8, 1.5));
+        super(pos.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5));
+        // defineProperty? --------------------------------------------------!!!!!!!!!!!!!!
         Object.defineProperty(this, 'type', {
             value: 'player'
         });
