@@ -101,11 +101,6 @@ class Level {
             }
         for (let y = topBorder; y < bottomBorder; y++){
             for (let x = leftBorder; x < rightBorder; x++){
-                // this.grid[y][x] лучше записатьв переменную, чтобы не писать 2 раза
-
-                //я не понял зачем это делать: чем this.grid[y][x] хуже?
-                //скорость доступа к массиву такая-же как и к обычной переменной
-
                 const obstacle = this.grid[y][x];
                 if (obstacle) {
                     return obstacle;
