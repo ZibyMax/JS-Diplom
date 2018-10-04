@@ -57,9 +57,8 @@ class Actor {
         if (this === checkActor) {
             return false;
         }
-        // скобки можно опустить
-        return (this.right > checkActor.left && this.left < checkActor.right &&
-            this.bottom > checkActor.top && this.top < checkActor.bottom);
+        return this.right > checkActor.left && this.left < checkActor.right &&
+            this.bottom > checkActor.top && this.top < checkActor.bottom;
     }
 }
 
@@ -82,10 +81,7 @@ class Level {
         if (!(checkActor instanceof Actor)){
             throw new Error('Аргумент функции actorAt должны быть типа Actor');
         }
-        // можно использовать форму записи стелочной функции без скобок
-        // переменную, в принципе, тоже можно не объявлять
-        const actor = this.actors.find(actor => { return checkActor.isIntersect(actor) });
-        return actor;
+        return this.actors.find(actor => checkActor.isIntersect(actor));
     }
 
     obstacleAt(destination, size){
@@ -100,9 +96,8 @@ class Level {
             return 'lava';
         }
         if (leftBorder < 0 || rightBorder > this.width || topBorder < 0 ) {
-            // форматирование
-                return 'wall';
-            }
+            return 'wall';
+        }
         for (let y = topBorder; y < bottomBorder; y++){
             for (let x = leftBorder; x < rightBorder; x++){
                 const obstacle = this.grid[y][x];
@@ -121,8 +116,7 @@ class Level {
     }
 
     noMoreActors(type){
-        // внешние скобки можно опустить
-        return !(this.actors.some(actor => actor.type === type));
+        return !this.actors.some(actor => actor.type === type);
     }
 
     playerTouched(objectName, objectActor) {
@@ -134,11 +128,10 @@ class Level {
         }
         if (objectName === 'coin') {
             this.removeActor(objectActor);
-            // форматирование
             if (this.noMoreActors('coin')){
                 this.status = 'won';
-                }
             }
+        }
     }
 }
 
