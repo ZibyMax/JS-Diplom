@@ -57,8 +57,8 @@ class Actor {
         if (this === checkActor) {
             return false;
         }
-        return (this.right > checkActor.left && this.left < checkActor.right &&
-            this.bottom > checkActor.top && this.top < checkActor.bottom);
+        return this.right > checkActor.left && this.left < checkActor.right &&
+            this.bottom > checkActor.top && this.top < checkActor.bottom;
     }
 }
 
@@ -68,8 +68,7 @@ class Level {
         this.actors = actors;
         this.player = this.actors.find(actor => actor.type === 'player');
         this.height = this.grid.length;
-        // если добавить в список аргументов Math.max 0, то проверку можно будет убрать -----> а?-----------------------!!!!!!!!!!
-        this.width = this.height !== 0 ? Math.max(...this.grid.map(row => row.length)) : 0;
+        this.width = Math.max(0, ...this.grid.map(row => row.length));
         this.status = null;
         this.finishDelay = 1;
     }
@@ -82,8 +81,7 @@ class Level {
         if (!(checkActor instanceof Actor)){
             throw new Error('Аргумент функции actorAt должны быть типа Actor');
         }
-        const actor = this.actors.find(actor => { return checkActor.isIntersect(actor) });
-        return actor;
+        return this.actors.find(actor => checkActor.isIntersect(actor));
     }
 
     obstacleAt(destination, size){
@@ -98,15 +96,13 @@ class Level {
             return 'lava';
         }
         if (leftBorder < 0 || rightBorder > this.width || topBorder < 0 ) {
-                return 'wall';
-            }
+            return 'wall';
+        }
         for (let y = topBorder; y < bottomBorder; y++){
             for (let x = leftBorder; x < rightBorder; x++){
-                // this.grid[y][x] лучше записатьв переменную, чтобы не писать 2 раза
-                // -----> я не понял зачем это делать: чем this.grid[y][x] хуже?
-                let posInGrid = this.grid[y][x];
-                if (posInGrid !== undefined) {
-                    return posInGrid;
+                const obstacle = this.grid[y][x];
+                if (obstacle) {
+                    return obstacle;
                 }
             }
         }
@@ -120,7 +116,7 @@ class Level {
     }
 
     noMoreActors(type){
-        return !(this.actors.some(actor => actor.type === type));
+        return !this.actors.some(actor => actor.type === type);
     }
 
     playerTouched(objectName, objectActor) {
@@ -134,8 +130,8 @@ class Level {
             this.removeActor(objectActor);
             if (this.noMoreActors('coin')){
                 this.status = 'won';
-                }
             }
+        }
     }
 }
 
@@ -158,12 +154,7 @@ class LevelParser{
     }
 
     createGrid(lines){
-        const grid = [];
-        // можно записать короче, если использовать метод map 2 раза ---------------------------------------------------!!!!!!!!!!!!!!!!
-        lines.forEach(line => {
-            grid.push(line.split('').map(item => this.obstacleFromSymbol(item)));
-        });
-        return grid;
+        return lines.map(line => line.split('').map(item => this.obstacleFromSymbol(item)));
     }
 
     createActors(lines) {
