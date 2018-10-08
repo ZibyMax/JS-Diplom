@@ -276,4 +276,15 @@ class Player extends Actor{
     }
 }
 
-// ------------------------------------
+const actors = {
+    '@': Player,
+    'o': Coin,
+    '=': HorizontalFireball,
+    '|': VerticalFireball,
+    'v': FireRain
+};
+const parser = new LevelParser(actors);
+
+loadLevels()
+    .then(schemas => runGame(JSON.parse(schemas), parser, DOMDisplay))
+    .then(() => alert('Вы выиграли приз!'));
